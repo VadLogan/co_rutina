@@ -30,19 +30,17 @@ function execute(generator, yieldValue) {
     //          );
 
         let next = generator.next(yieldValue);
-        if(next.done) {
-            return next.value
-        } else if (next.value instanceof Promise) {
-        return next.value.then(
-           result => execute(generator, result),
-           err => generator.throw(err)
-                );
+        if(next.done) return next.value
+        if (next.value instanceof Promise) {
+          return next.value.then(
+            result => execute(generator, result),
+            err => generator.throw(err));
         }else{
             execute(generator, next.value)
         }
 }
 
-execute(getData()).then(res => console.log(res));
+execute(traningGenerator()).then(res => console.log(res));
 
 
 
@@ -51,7 +49,7 @@ function* getData() {
     let users = [...resUsers.data.map(({username, email}) => ({ nick: username, email: email }))];
     const resPosts = yield axios.get('http://jsonplaceholder.typicode.com/posts/1');
     const resComments = yield axios.get('http://jsonplaceholder.typicode.com/comments/1');
-return { users, resPosts, resComments };
+        return { users, resPosts, resComments };
 }
 
 
@@ -60,16 +58,16 @@ return { users, resPosts, resComments };
 
 
 
-function myCo(func){
-    if(typeof func !== 'function'){
-        console.info('use function* as argument')
-            return;
-}	   
-const gener = func();
+// function myCo(func){
+//     if(typeof func !== 'function'){
+//         console.info('use function* as argument')
+//             return;
+// }	   
+// const gener = func();
 
-for( let gen of gener){
-        if(gen instanceof Promise){
-           return Promise.resolve(gen)
-    }
-    }
-}
+// for( let gen of gener){
+//         if(gen instanceof Promise){
+//            return Promise.resolve(gen)
+//     }
+//     }
+// }
