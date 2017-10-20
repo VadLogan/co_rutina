@@ -20,17 +20,26 @@ function execute(generator, yieldValue) {
     //    console.info('use function* as argument');
     //     return;
     // }
-    return new Promise((resolve,reject)=> )
+
+    // let next = generator.next(yieldValue);
+    // if(next.done) return next.value;
+    // if(!(next.value instanceof Promise)) return execute( generator, next.value)
+    // return  next.value.then(
+    //     result => execute(generator, result),
+    //     err => generator.throw(err)
+    //          );
+
         let next = generator.next(yieldValue);
-        if (!next.done && next.value instanceof Promise) {
-            next.value.then(
-                result => execute(generator, result),
-                err => generator.throw(err)
+        if(next.done) {
+            return next.value
+        } else if (next.value instanceof Promise) {
+        return next.value.then(
+           result => execute(generator, result),
+           err => generator.throw(err)
                 );
-            }else{
-                //console.log(next.value);
-                return Promise.resolve(() => next.value);
-}
+        }else{
+            execute(generator, next.value)
+        }
 }
 
 execute(getData()).then(res => console.log(res));
