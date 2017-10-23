@@ -1,33 +1,8 @@
-import co from 'co';
-import axios from 'axios';
-import regeneratorRuntime from "regenerator-runtime";
+const co = require('co');
+const axios = require('axios');
+const regeneratorRuntime = require("regenerator-runtime");
 
-
-
-
-const wait = (time, times = 0) => new Promise((res,rej)=>{
-    setTimeout(()=> res(`$resolved$ ${++times}`), time);
-});
-
-function* traningGenerator(){
-    const prom = yield wait(1000);
-    const res = yield prom;
-    return res;
-}
-function execute(generator, yieldValue) {
-    // if(generator.isPrototypeOf()){
-    //     console.dir( generator);
-    //    console.info('use function* as argument');
-    //     return;
-    // }
-
-    // let next = generator.next(yieldValue);
-    // if(next.done) return next.value;
-    // if(!(next.value instanceof Promise)) return execute( generator, next.value)
-    // return  next.value.then(
-    //     result => execute(generator, result),
-    //     err => generator.throw(err)
-    //          );
+let  execute = (generator, yieldValue)=>{
 
         let next = generator.next(yieldValue);
         if(next.done) return next.value
@@ -38,11 +13,7 @@ function execute(generator, yieldValue) {
         }else{
             execute(generator, next.value)
         }
-}
-
-execute(traningGenerator()).then(res => console.log(res));
-
-
+};
 
 function* getData() {
     const resUsers = yield axios.get('http://jsonplaceholder.typicode.com/users/');
@@ -52,22 +23,6 @@ function* getData() {
         return { users, resPosts, resComments };
 }
 
+execute(getData()).then(res => console.log(res));
+co(getData()).then( res => console.log(res));
 
-// co(getData).then( res => console.log(res));
-//myCo(getData).then( res => console.log(res));
-
-
-
-// function myCo(func){
-//     if(typeof func !== 'function'){
-//         console.info('use function* as argument')
-//             return;
-// }	   
-// const gener = func();
-
-// for( let gen of gener){
-//         if(gen instanceof Promise){
-//            return Promise.resolve(gen)
-//     }
-//     }
-// }
